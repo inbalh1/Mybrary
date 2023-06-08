@@ -3,6 +3,9 @@
 //npm i --save-dev nodemon
 //npm i mongoose  // Allows integrating with mongoDb
 //npm i  --save-dev dotenv // Allows adding env variables to the file .env
+//npm i body-parser // Helps parsing input elements(from ejs files)
+// Run with "npm start" so it will refresh <- No it didnt work, find out how
+
 
 // the variable process.env.NODE_ENV is set  automatically by nodeJs
 if (process.env.NODE_ENV !== "production") {
@@ -13,23 +16,34 @@ if (process.env.NODE_ENV !== "production") {
 const express = require("express");
 const app = express();
 const expressLayouts = require("express-ejs-layouts");
+const bodyParser = require("body-parser");
 
 const indexRouter = require("./routes/index.js");
+const authorRouter = require("./routes/authors.js");
 
 app.set("view engine", "ejs");
 app.set("views", __dirname + "/views");
 app.set("layout", "layouts/layout");
 app.use(expressLayouts);
 app.use(express.static("public"));
+app.use(bodyParser.urlencoded({limit: '10mb', extended: false}));
 
 const mongoose = require("mongoose");
-mongoose.connect(process.env.DATABASE_URL, {useNewUrlParser: true});
-//mongoose.connect("mongodb://localhost/mybrary", {useNewUrlParser: true});
+// From  some reason mongoose doesnt work well (todo: check online for solution)
+mongoose.connect(process.env.DATABASE_URL, {useNewUrlParser: true})
+.then(()=>console.log('connected'))
+.catch(e=>console.log("Error connecting to mongo: " +  e));
 const db = mongoose.connection;
-db.on("error", error => console.error(error)); // If we run into an error
-db.once("open", () => console.log("Connected to mongoose")); // This will run only once, when we connect to mongoose
+// If we run into an error
+db.on("error", error => console.error(error));
+// This will run only once, when we connect to mongoose
+db.once("open", () => console.log("Connected to mongoose"));
 
-app.use("/", indexRouter); // The index router should handle the root
+// The index router should handle the root
+app.use("/", indexRouter);
+// All routes inside authorRouter will prepadded with "/authors"
+app.use("/authors", authorRouter);
+
 // In  deployment we'll have an env variable
 app.listen(process.env.PORT || 3000);
 

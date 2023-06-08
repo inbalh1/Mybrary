@@ -7,10 +7,12 @@
     <title>Mybrary</title>
   </head>
   <body>
-  This is a template. All the pages that use it will insert their body  here:
+  <%# This is a template. All the pages that use it will insert their body  here: %>
   <br>
+  <%- include("../partials/header.ejs") %>
+  <%- include("../partials/errorMessage.ejs") %>
   <%- body %>
   <br>
-  End of the template
+  <%# End of the template %>
   </body>
 </html>
