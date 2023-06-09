@@ -31,12 +31,14 @@ app.use(bodyParser.urlencoded({limit: '10mb', extended: false}));
 const mongoose = require("mongoose");
 // From  some reason mongoose doesnt work well (todo: check online for solution)
 mongoose.connect(process.env.DATABASE_URL, {useNewUrlParser: true})
-.then(()=>console.log('connected'))
+.then(()=>console.log('Connected to mongoose'))
 .catch(e=>console.log("Error connecting to mongo: " +  e));
+
 const db = mongoose.connection;
 // If we run into an error
 db.on("error", error => console.error(error));
 // This will run only once, when we connect to mongoose
+// TODO: this is redundant
 db.once("open", () => console.log("Connected to mongoose"));
 
 // The index router should handle the root
