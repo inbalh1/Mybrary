@@ -4,6 +4,7 @@
 //npm i mongoose  // Allows integrating with mongoDb
 //npm i  --save-dev dotenv // Allows adding env variables to the file .env
 //npm i body-parser // Helps parsing input elements(from ejs files)
+// npm i multer // Work with files
 // Run with "npm start" so it will refresh <- No it didnt work, find out how
 
 
@@ -18,8 +19,9 @@ const app = express();
 const expressLayouts = require("express-ejs-layouts");
 const bodyParser = require("body-parser");
 
-const indexRouter = require("./routes/index.js");
-const authorRouter = require("./routes/authors.js");
+const indexRouter = require("./routes/index");
+const authorRouter = require("./routes/authors");
+const bookRouter = require("./routes/books");
 
 app.set("view engine", "ejs");
 app.set("views", __dirname + "/views");
@@ -45,6 +47,7 @@ db.once("open", () => console.log("Connected to mongoose"));
 app.use("/", indexRouter);
 // All routes inside authorRouter will prepadded with "/authors"
 app.use("/authors", authorRouter);
+app.use("/books", bookRouter);
 
 // In  deployment we'll have an env variable
 app.listen(process.env.PORT || 3000);
