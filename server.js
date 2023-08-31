@@ -5,7 +5,7 @@
 //npm i  --save-dev dotenv // Allows adding env variables to the file .env
 //npm i body-parser // Helps parsing input elements(from ejs files)
 // npm i multer // Work with files
-// Run with "npm start" so it will refresh <- No it didnt work, find out how
+// Run with "npm start" so it will refresh <- No it didnt work, find out how. Maybe its "npm run devStart".
 
 
 // the variable process.env.NODE_ENV is set  automatically by nodeJs
