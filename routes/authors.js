@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 const Author = require("../models/author");
+const Book = require('../models/book');
 
 // All authors route
 router.get("/", async function(req, res) {
@@ -35,9 +36,8 @@ router.post("/", function(req, res) {
         name: req.body.name
     });
     author.save().then(function (newAuthor) {
-        //res.redirect("authors/${newAuthor.id}");
+        res.redirect(`authors/${newAuthor.id}`);
         console.log(`Author ${newAuthor.name} added successfully`)
-        res.redirect("authors");
     })
     .catch(function (err) {
         console.log(err);
@@ -56,6 +56,74 @@ router.post("/", function(req, res) {
             errorMessage: "Error creating Author"
             });        
     }*/
+});
+
+router.get("/:id", async function(req, res) {
+    try {
+        const author = await Author.findById(req.params.id);
+        const booksByAuthor = await Book.find({author: author.id}).limit(6).exec();
+        res.render("authors/show", {
+            author: author,
+            booksByAuthor: booksByAuthor
+            });
+    } catch(err) {
+        console.log(err);
+        res.redirect("/");
+    }
+});
+
+router.get("/:id/edit", async function(req, res) {
+    try {
+        const author = await Author.findById(req.params.id);
+        res.render("authors/edit", {author: author});
+    } catch(err) {
+        console.log(err);
+        res.redirect("/authors");
+    }
+});
+
+// Notice the route lookup goes from top to buttom, so this has to be after "/new" route
+// Update page
+router.put("/:id", async function(req, res) {
+    // Must define outside the try block
+    let author;
+    try {
+        author = await Author.findById(req.params.id);
+        author.name = req.body.name;
+        author.save().then(function (author) {
+            res.redirect(`/authors/${author.id}`);
+        })
+        .catch(function (err) {
+            console.log(err);
+            res.render("authors/edit", {
+                author: author,
+                errorMessage: "Error updating Author"
+                });
+        });
+    } catch(err) {
+        console.log(err);
+        res.redirect("/");
+    }
+});
+
+router.delete("/:id", async function(req, res) {
+    // Must define outside the try block
+    let author;
+    try {
+        author = await Author.findById(req.params.id);
+        // Is there something like save->then  for remove?
+        await Author.deleteOne({_id: author.id});
+        res.redirect('/authors');
+    } catch(err) {
+        if (author == null) {
+            res.redirect("/");
+        }
+        else {
+            res.redirect(`/authors/${author.id}`);
+        }
+        console.log(err);
+        
+    }
 });
 
 module.exports = router; // Export the router
